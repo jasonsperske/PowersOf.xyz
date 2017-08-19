@@ -1,0 +1,187 @@
+---
+layout: default
+---
+<div class='row'>
+  <div class='col-md-9' id='Quiz'>
+    <div class="jumbotron">
+      <h1 class="display-3">Hello, Person!</h1>
+      <p class="lead">Lets make a simple math quiz for you to practice and to get better</p>
+    </div>
+    <div class='row'>
+      <div class='col-md-4'>
+        <form id='Settings' method="POST">
+          <div class="form-group">
+            <label for='Questions'>Questions</label>
+            <input type='text' class="form-control" id='Questions' name='Questions' value="40" placeholder='Leave empty for endless questions'/>
+          </div>
+          <div class="form-check">
+            <label for='Operators'>
+              Using
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="checkbox" name='Operators' value="+"> +
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="checkbox" name='Operators' value="-"> -
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="checkbox" name='Operators' value="*"> &times;
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="checkbox" name='Operators' value="/"> &divide;
+            </label>
+          </div>
+        </form>
+        <button class='btn btn-primary' data-submits='Settings'>Build Quiz</button>
+      </div>
+    </div>
+  </div>
+  <div class='col-md-3'>
+    <div class="card">
+      <div class="card-body" id='Progress'>
+        <h4 class="card-title">Setup Your Quiz</h4>
+        <p class="card-text"><button id='SubmitAnswers' class='btn btn-success'>Check</button></p>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .Problem {
+    border-bottom: 1px solid black;
+  }
+  .form-control:disabled.is-valid {
+    background-color: #bffbcd;
+    opacity: 1;
+  }
+  .form-control:disabled.is-invalid {
+    background-color: #fcd3d7;
+    opacity: 1;
+  }
+</style>
+<script id='Template' type='template/ejs'>
+  <div class='row'>
+  <% questions.forEach(function(question) { %>
+    <div class='col-sm-6 col-md-3'>
+      <div class="card">
+        <div class="card-body">
+          <form>
+            <pre class='text-right Problem'><%=question.problem%></pre>
+            <div class="input-group mb-2 mb-sm-0">
+              <div class="input-group-addon"><%=question.operator%></div>
+              <input type="number" class="form-control text-right" name="Answer" data-answer="<%=question.answer%>">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+  </div>
+</script>
+<script type='text/javascript'>
+  var quiz = $('#Quiz'),
+      progress = $('#Progress'),
+      template = ejs.compile($('#Template').html()),
+      operators = {
+        '+': {
+          compose: function() {
+            var a = _.random(1, 20),
+                b = _.random(3, 11);
+            return {
+              problem: a+'\n'+b,
+              operator: '+',
+              answer: a+b
+            };
+          }
+        },
+        '-': {
+          compose: function() {
+            var a = _.random(10, 30),
+                b = _.random(3, 10);
+            return {
+              problem: a+'\n'+b,
+              operator: '-',
+              answer: a-b
+            };
+          }
+        },
+        '*': {
+          compose: function() {
+            var a = _.random(2, 10),
+                b = _.random(1, 10);
+            return {
+              problem: a+'\n'+b,
+              operator: '*',
+              answer: a*b
+            };
+          }
+        },
+        '/': {
+          compose: function() {
+            var a = _.random(2, 10),
+                b = _.random(1, 10);
+            return {
+              problem: (a*b)+'\n'+b,
+              operator: '/',
+              answer: a
+            };
+          }
+        }
+      };
+
+  $('#Settings').on('submit', function(e) {
+    var form = $(this),
+        questions = [],
+        i, size = parseInt($('[name=Questions]', form).val(), 10),
+        selected_operator_inputs = $('[name=Operators]:checked', form);
+    e.preventDefault();
+    if(isNaN(size)) {
+      alert('You need to pick some number of questions');
+      return;
+    }
+    if(selected_operator_inputs.length < 1) {
+      alert('You need to pick some math operators');
+      return;
+    }
+    var selected_operators = "";
+    selected_operator_inputs.each(function() {
+      selected_operators += $(this).val();
+    });
+    var question_operators = _.shuffle(new Array(size + 1).join(selected_operators).split(''));
+    for(var i = 0; i < size; i++) {
+      questions.push(operators[question_operators[i]].compose());
+    }
+
+    quiz.html(template({questions: questions}));
+  });
+  $('[data-submits]').on('click', function() {
+    $('#'+$(this).data('submits')).trigger('submit');
+  });
+  $('#SubmitAnswers').on('click', function() {
+    var answered = $('[name=Answer]');
+    if(answered.length === 0) {
+      alert('You need to create a quiz before you check your answers');
+      return;
+    }
+    var possible = answered.length,
+        correct = 0;
+    answered.each(function() {
+      var input = $(this);
+      if(input.val() == input.data('answer')) {
+        input.addClass('is-valid');
+        correct += 1;
+      } else {
+        input.addClass('is-invalid');
+      }
+      input.attr('disabled', 'disabled');
+    });
+    $('.card-title', progress).html(correct+' / '+possible);
+  })
+</script>
