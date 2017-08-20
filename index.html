@@ -185,7 +185,9 @@ layout: default
       }
       input.attr('disabled', 'disabled');
     });
-    $('.card-title', progress).html(correct+' / '+possible);
-    duration = (end.getTime() - start.getTime())/1000);
+    duration = (end.getTime() - start.getTime())/1000;
+    var min = Math.floor((duration/60) << 0),
+        sec = Math.floor(duration % 60);
+    $('.card-title', progress).html(correct+' / '+possible+'<br/> in '+min+':'+(sec < 10 ? '0'+sec: sec));
   });
 </script>
