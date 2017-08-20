@@ -134,7 +134,8 @@ layout: default
             };
           }
         }
-      };
+      },
+      start, end, duration;
 
   $('#Settings').on('submit', function(e) {
     var form = $(this),
@@ -142,6 +143,7 @@ layout: default
         i, size = parseInt($('[name=Questions]', form).val(), 10),
         selected_operator_inputs = $('[name=Operators]:checked', form);
     e.preventDefault();
+    start = new Date();
     if(isNaN(size)) {
       alert('You need to pick some number of questions');
       return;
@@ -172,6 +174,7 @@ layout: default
     }
     var possible = answered.length,
         correct = 0;
+    end = new Date();
     answered.each(function() {
       var input = $(this);
       if(input.val() == input.data('answer')) {
@@ -183,5 +186,6 @@ layout: default
       input.attr('disabled', 'disabled');
     });
     $('.card-title', progress).html(correct+' / '+possible);
-  })
+    duration = (end.getTime() - start.getTime())/1000);
+  });
 </script>
