@@ -135,7 +135,13 @@ layout: default
           }
         }
       },
-      start, end, duration;
+      time = function(start, end) {
+        var duration = (end.getTime() - start.getTime())/1000,
+            min = Math.floor((duration/60) << 0),
+            sec = Math.floor(duration % 60);
+        return min+':'+(sec < 10 ? '0'+sec : sec);
+      },
+      start, end;
 
   $('#Settings').on('submit', function(e) {
     var form = $(this),
@@ -185,9 +191,7 @@ layout: default
       }
       input.attr('disabled', 'disabled');
     });
-    duration = (end.getTime() - start.getTime())/1000;
-    var min = Math.floor((duration/60) << 0),
-        sec = Math.floor(duration % 60);
-    $('.card-title', progress).html(correct+' / '+possible+'<br/> in '+min+':'+(sec < 10 ? '0'+sec: sec));
+
+    $('.card-title', progress).html(correct+' / '+possible+'<br/> in '+time(start, end));
   });
 </script>
