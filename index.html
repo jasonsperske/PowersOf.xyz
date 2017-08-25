@@ -2,6 +2,9 @@
 layout: default
 title: PowersOf(xyz)
 ---
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.2/katex.min.css" integrity="sha384-XFgyVzCwumZgSg6F85gbh6ev/BVWgP7QAb1V3GOchWQPifusZTU0ODnQsysBK61F" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.2/katex.min.js" integrity="sha384-RpxfKy6OA0Us+WtIGBbrVlfwW4HuETdB9CD8KbG6qSbYbCanfnyid62sojNvydoB" crossorigin="anonymous"></script>
+
 <div class='row'>
   <div class='col-md-9' id='Quiz'>
     <div class="jumbotron">
@@ -56,7 +59,15 @@ title: PowersOf(xyz)
 </div>
 <style>
   .Problem {
-    border-bottom: 1px solid black;
+    text-align: right;
+    border-bottom: 1px solid #000;
+    margin-bottom: 10px;
+  }
+  .Problem.division {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    text-align: center;
+    border: none;
   }
   .form-control:disabled.is-valid {
     background-color: #bffbcd;
@@ -74,9 +85,8 @@ title: PowersOf(xyz)
       <div class="card">
         <div class="card-body">
           <form>
-            <pre class='text-right Problem'><%=question.problem%></pre>
-            <div class="input-group mb-2 mb-sm-0">
-              <div class="input-group-addon"><%=question.operator%></div>
+            <div class='Problem <%=question.cssClass%>'><%-question.problem%></div>
+            <div class="mb-2 mb-sm-0">
               <input type="number" class="form-control text-right" name="Answer" data-answer="<%=question.answer%>">
             </div>
           </form>
@@ -94,44 +104,52 @@ title: PowersOf(xyz)
         '+': {
           compose: function() {
             var a = _.random(1, 20),
-                b = _.random(3, 11);
+                b = _.random(3, 11),
+                problem = katex.renderToString('\\begin{aligned}'+a+'\\\\+'+b+'\\end{aligned}');
             return {
-              problem: a+'\n'+b,
+              problem: problem,
               operator: '+',
-              answer: a+b
+              answer: a+b,
+              cssClass: 'addition'
             };
           }
         },
         '-': {
           compose: function() {
             var a = _.random(10, 30),
-                b = _.random(3, 10);
+                b = _.random(3, 10),
+                problem = katex.renderToString('\\begin{aligned}'+a+'\\\\-'+b+'\\end{aligned}');
             return {
-              problem: a+'\n'+b,
+              problem: problem,
               operator: '-',
-              answer: a-b
+              answer: a-b,
+              cssClass: 'subtraction'
             };
           }
         },
         '*': {
           compose: function() {
             var a = _.random(2, 10),
-                b = _.random(1, 10);
+                b = _.random(1, 10),
+                problem = katex.renderToString('\\begin{aligned}'+a+'\\\\\\times'+b+'\\end{aligned}');
             return {
-              problem: a+'\n'+b,
-              operator: '*',
-              answer: a*b
+              problem: problem,
+              operator: '&times;',
+              answer: a*b,
+              cssClass: 'multiplcation'
             };
           }
         },
         '/': {
           compose: function() {
             var a = _.random(2, 10),
-                b = _.random(1, 10);
+                b = _.random(1, 10),
+                problem = katex.renderToString('\\dfrac{'+(a*b)+'}{'+b+'}');
             return {
-              problem: (a*b)+'\n'+b,
-              operator: '/',
-              answer: a
+              problem: problem,
+              operator: '&divide;',
+              answer: a,
+              cssClass: 'division'
             };
           }
         }
