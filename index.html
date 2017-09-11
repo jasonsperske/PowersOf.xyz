@@ -64,10 +64,13 @@ title: PowersOf(xyz)
     margin-bottom: 10px;
   }
   .Problem.division {
-    padding-bottom: 10px;
+    padding-bottom: 25px;
     padding-top: 10px;
     text-align: center;
     border: none;
+  }
+  .Problem.division .overline-line {
+    margin-bottom: -2px;
   }
   .form-control:disabled.is-valid {
     background-color: #bffbcd;
@@ -144,7 +147,7 @@ title: PowersOf(xyz)
           compose: function() {
             var a = _.random(2, 10),
                 b = _.random(1, 10),
-                problem = katex.renderToString('\\dfrac{'+(a*b)+'}{'+b+'}');
+                problem = katex.renderToString(b+'\\space\\overline{)\\space'+(a*b)+'}');
             return {
               problem: problem,
               operator: '&divide;',
